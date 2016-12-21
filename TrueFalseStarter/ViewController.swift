@@ -14,27 +14,22 @@ class ViewController: UIViewController {
     
     let questionsPerRound = 4
     var questionsAsked = 0
-    var correctQuestions = 0
+    var correctQuestions = 0                                                  ///stored properties
     var indexOfSelectedQuestion: Int = 0
     
     var gameSound: SystemSoundID = 0
     
-    let trivia: [[String : String]] = [
-        ["Question": "Only female koalas can whistle", "Answer": "False"],
-        ["Question": "Blue whales are technically whales", "Answer": "True"],
-        ["Question": "Camels are cannibalistic", "Answer": "False"],
-        ["Question": "All ducks are birds", "Answer": "True"]
-    ]
+    
     
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!
+    @IBOutlet weak var falseButton: UIButton!                                  ///connections with Interface Builder
     @IBOutlet weak var playAgainButton: UIButton!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadGameStartSound()
+        loadGameStartSound()                                                            ///calling functions
         // Start game
         playGameStartSound()
         displayQuestion()
@@ -45,9 +40,9 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func displayQuestion() {
-        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
-        let questionDictionary = trivia[indexOfSelectedQuestion]
+    func displayQuestion() {                                                            ///Question field set-up
+       
+        let questionDictionary = IndividualQuestions().getIndividualQuestion()
         questionField.text = questionDictionary["Question"]
         playAgainButton.isHidden = true
     }
@@ -68,7 +63,7 @@ class ViewController: UIViewController {
         // Increment the questions asked counter
         questionsAsked += 1
         
-        let selectedQuestionDict = trivia[indexOfSelectedQuestion]
+        let selectedQuestionDict = IndividualQuestions().getIndividualQuestion()
         let correctAnswer = selectedQuestionDict["Answer"]
         
         if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
