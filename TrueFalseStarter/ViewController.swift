@@ -12,95 +12,193 @@ import AudioToolbox
 
 class ViewController: UIViewController {
     
-    let questionsPerRound = 4
+    var questionsPerRound = 4                                                       ///stored value properties
     var questionsAsked = 0
-    var correctQuestions = 0                                                  ///stored properties
+    var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
+    var askedDataArray: [Int] = []
+   
+    
+   
+    
     
     var gameSound: SystemSoundID = 0
     
     
+    @IBOutlet weak var questionField: UILabel!                                      ///connections with Interface Builder
+    @IBOutlet weak var trueFalseField: UILabel!
+    @IBOutlet weak var answer1: UIButton!
+    @IBOutlet weak var answer2: UIButton!
+    @IBOutlet weak var answer3: UIButton!
+    @IBOutlet weak var answer4: UIButton!
+    @IBOutlet weak var navigateButton: UIButton!
     
-    @IBOutlet weak var questionField: UILabel!
-    @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!                                  ///connections with Interface Builder
-    @IBOutlet weak var playAgainButton: UIButton!
+   
+   
+ 
     
-
-    override func viewDidLoad() {
+    
+    override func viewDidLoad() {                                                   ///calling functions to set-up View
         super.viewDidLoad()
-        loadGameStartSound()                                                            ///calling functions
+        loadGameStartSound()
         // Start game
         playGameStartSound()
-        displayQuestion()
+        displayQuestionAndAnswers()
+        
+        
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func displayQuestion() {                                                            ///Question field set-up
-       
-        let questionDictionary = IndividualQuestions().getIndividualQuestion()
-        questionField.text = questionDictionary["Question"]
-        playAgainButton.isHidden = true
+    
+    func displayQuestionAndAnswers() {                                               ///displaying question&answers
+        
+        
+        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
+        
+        while askedDataArray.contains(indexOfSelectedQuestion) {                      //ensuring question randomness
+            
+            indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
+            
+        }
+        
+        askedDataArray.append(indexOfSelectedQuestion)
+        
+        let questionAndAnswers = trivia[indexOfSelectedQuestion]
+        questionField.text =  questionAndAnswers.question
+        
+                                                                                        //setting button titles
+        answer1.setTitle("\(questionAndAnswers.answer1)", for: .normal)
+        answer2.setTitle("\(questionAndAnswers.answer2)", for: .normal)
+        answer3.setTitle("\(questionAndAnswers.answer3)", for: .normal)
+        answer4.setTitle("\(questionAndAnswers.answer4)", for: .normal)
+                                                                                        //hidding two button/answers
+        if "\(questionAndAnswers.answer1)" == "Yes" || "\(questionAndAnswers.answer2)" == "No" {
+            
+            answer3.isHidden = true
+            answer4.isHidden = true
+            
+        }else{
+            
+            answer3.isHidden = false
+            answer4.isHidden = false
+        
+        
+        
+        }
+        
+        trueFalseField.isHidden = true
+        navigateButton.isHidden = true
     }
     
-    func displayScore() {
-        // Hide the answer buttons
-        trueButton.isHidden = true
-        falseButton.isHidden = true
-        
-        // Display play again button
-        playAgainButton.isHidden = false
-        
-        questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
-        
-    }
     
-    @IBAction func checkAnswer(_ sender: UIButton) {
-        // Increment the questions asked counter
+   @IBAction func checkAnswer(_ sender: UIButton) {                                  ///setting correct&incorrect answers
+    
         questionsAsked += 1
+    
+        trueFalseField.isHidden = false
+                                                                                      //storing each button title/answer
+        let selectedQuestions = trivia[indexOfSelectedQuestion]
+        let someAnswer1 = selectedQuestions.answer1
+        let someAnswer2 = selectedQuestions.answer2
+        let someAnswer3 = selectedQuestions.answer3
+        let someAnswer4 = selectedQuestions.answer4
         
-        let selectedQuestionDict = IndividualQuestions().getIndividualQuestion()
-        let correctAnswer = selectedQuestionDict["Answer"]
+        let correctAnswer = selectedQuestions.correctAnswer
+                                                                                      //checking answers
         
-        if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
+        if ((sender === answer1  && someAnswer1 == correctAnswer) || (sender === answer2  && someAnswer2 == correctAnswer)) || ((sender === answer3  && someAnswer3 == correctAnswer) || (sender === answer4  && someAnswer4 == correctAnswer)) {
+        
             correctQuestions += 1
-            questionField.text = "Correct!"
+            navigateButton.isHidden = false
+            trueFalseField.text = "Correct answer!!"
+            
         } else {
-            questionField.text = "Sorry, wrong answer!"
+            
+            trueFalseField.text = "Sorry,keep forward..."
+            navigateButton.isHidden = false
+            
         }
+    
+        if questionsAsked == questionsPerRound  {                                     //displaying score page at the end of game
         
-        loadNextRoundWithDelay(seconds: 2)
+            loadScorePage(seconds: 1)
+            navigateButton.isHidden = true
     }
+  }
     
-    func nextRound() {
-        if questionsAsked == questionsPerRound {
-            // Game is over
-            displayScore()
-        } else {
-            // Continue game
-            displayQuestion()
+    
+    @IBAction func settingNavigateButton() {                                            ///setting Navigate Button
+        
+        if questionsAsked < questionsPerRound {
+            
+            displayQuestionAndAnswers()
+            navigateButton.setTitle("Next Question", for: .normal)
+            answer1.isHidden = false
+            answer2.isHidden = false
+            
         }
     }
     
-    @IBAction func playAgain() {
-        // Show the answer buttons
-        trueButton.isHidden = false
-        falseButton.isHidden = false
+    
+    func displayScore() {                                                                 ///score page set-up
+        
+        questionField.text = "Way to go!You scored \(correctQuestions) of \(questionsPerRound) correct!"
         
         questionsAsked = 0
         correctQuestions = 0
-        nextRound()
+        
+        answer1.isHidden = true
+        answer2.isHidden = true
+        answer3.isHidden = true
+        answer4.isHidden = true
+        trueFalseField.isHidden = true
+        navigateButton.isHidden = false
+        
+        navigateButton.setTitle("Play Again", for: .normal)
+        
+        
+        
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
+        
+    
+   
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // MARK: Helper Methods
     
-    func loadNextRoundWithDelay(seconds: Int) {
+    func loadScorePage(seconds: Int) {
         // Converts a delay in seconds to nanoseconds as signed 64 bit integer
         let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
         // Calculates a time value to execute the method given current time and delay
@@ -108,7 +206,7 @@ class ViewController: UIViewController {
         
         // Executes the nextRound method at the dispatch time on the main queue
         DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
-            self.nextRound()
+            self.displayScore()
         }
     }
     
@@ -121,5 +219,10 @@ class ViewController: UIViewController {
     func playGameStartSound() {
         AudioServicesPlaySystemSound(gameSound)
     }
+
 }
+
+
+
+
 
