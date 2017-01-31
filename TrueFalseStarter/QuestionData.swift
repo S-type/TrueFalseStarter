@@ -47,7 +47,7 @@ var trivia = [ QuestionData(question: "Only female koalas can whistle", answer1:
     
               QuestionData(question: "This was the only US President to serve more than two consecutive terms", answer1: "George Washington", answer2: "Franklin D.Roosevelt", answer3: "Woodrow Wilson", answer4: "Andrew Jackson", correctAnswer: "Franklin D.Roosevelt"),
     
-              QuestionData(question: "Which of the following countries has the most residents?", answer1: "Nigeria", answer2: "Russsia", answer3: "Iran", answer4: "Vietnam", correctAnswer: "Nigeria"),
+              QuestionData(question: "Which of the following countries has the most residents?", answer1: "Nigeria", answer2: "Russia", answer3: "Iran", answer4: "Vietnam", correctAnswer: "Nigeria"),
     
               QuestionData(question: "In what year was the United Nations founded?", answer1: "1918", answer2: "1919", answer3:  "1945", answer4: "1954", correctAnswer: "1945"),
     

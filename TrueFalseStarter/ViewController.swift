@@ -17,12 +17,8 @@ class ViewController: UIViewController {
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
     var askedDataArray: [Int] = []
-   
-    
-   
-    
-    
     var gameSound: SystemSoundID = 0
+
     
     
     @IBOutlet weak var questionField: UILabel!                                      ///connections with Interface Builder
@@ -33,19 +29,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var answer4: UIButton!
     @IBOutlet weak var navigateButton: UIButton!
     
-   
-   
- 
-    
     
     override func viewDidLoad() {                                                   ///calling functions to set-up View
         super.viewDidLoad()
-        loadGameStartSound()
-        // Start game
-        playGameStartSound()
+        
+        loadStartGameSound()
+                                                                                    //starting game
+        playStartGameSound()
         displayQuestionAndAnswers()
-        
-        
     }
     
 
@@ -56,7 +47,7 @@ class ViewController: UIViewController {
     
     
     func displayQuestionAndAnswers() {                                               ///displaying question&answers
-        
+
         
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
         
@@ -87,12 +78,14 @@ class ViewController: UIViewController {
             answer3.isHidden = false
             answer4.isHidden = false
         
-        
-        
         }
         
         trueFalseField.isHidden = true
         navigateButton.isHidden = true
+        answer1.tintColor = UIColor.white                                            //setting defaulf button.tint color
+        answer2.tintColor = UIColor.white
+        answer3.tintColor = UIColor.white
+        answer4.tintColor = UIColor.white
     }
     
     
@@ -119,29 +112,52 @@ class ViewController: UIViewController {
             
         } else {
             
+            switch correctAnswer{                                                    //displaying correct answer,when User hit wrong
+            case someAnswer1:
+                answer1.tintColor = UIColor(red: 223/255.0, green: 86/255.0, blue: 94/255.0, alpha: 1.0)
+                answer2.tintColor = UIColor.lightText
+                answer3.tintColor = UIColor.lightText
+                answer4.tintColor = UIColor.lightText
+            case someAnswer2:
+                answer1.tintColor = UIColor.lightText
+                answer2.tintColor = UIColor(red: 223/255.0, green: 86/255.0, blue: 94/255.0, alpha: 1.0)
+                answer3.tintColor = UIColor.lightText
+                answer4.tintColor = UIColor.lightText
+            case someAnswer3:
+                answer1.tintColor = UIColor.lightText
+                answer2.tintColor = UIColor.lightText
+                answer3.tintColor = UIColor(red: 223/255.0, green: 86/255.0, blue: 94/255.0, alpha: 1.0)
+                answer4.tintColor = UIColor.lightText
+                
+            case someAnswer4:
+                answer1.tintColor = UIColor.lightText
+                answer2.tintColor = UIColor.lightText
+                answer3.tintColor = UIColor.lightText
+                answer4.tintColor = UIColor(red: 223/255.0, green: 86/255.0, blue: 94/255.0, alpha: 1.0)
+                
+            default:
+                print("")
+            }
+            
             trueFalseField.text = "Sorry,keep forward..."
             navigateButton.isHidden = false
             
         }
-    
-        if questionsAsked == questionsPerRound  {                                     //displaying score page at the end of game
+
+    if questionsAsked == questionsPerRound {
         
-            loadScorePage(seconds: 1)
-            navigateButton.isHidden = true
+        loadScorePage(seconds: 2)
+        navigateButton.isHidden = true
     }
   }
     
     
-    @IBAction func settingNavigateButton() {                                            ///setting Navigate Button
+    @IBAction func settingNavigateButton() {                                              ///setting Navigate Button
         
-        if questionsAsked < questionsPerRound {
-            
             displayQuestionAndAnswers()
             navigateButton.setTitle("Next Question", for: .normal)
             answer1.isHidden = false
             answer2.isHidden = false
-            
-        }
     }
     
     
@@ -161,68 +177,35 @@ class ViewController: UIViewController {
         
         navigateButton.setTitle("Play Again", for: .normal)
         
-        
-        
     }
+                                                                                           /// MARK: Helper Methods
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    func loadScorePage(seconds: Int) {                           // converts a delay in seconds to nanoseconds as signed 64 bit integer
 
-        
-    
-   
-  
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // MARK: Helper Methods
-    
-    func loadScorePage(seconds: Int) {
-        // Converts a delay in seconds to nanoseconds as signed 64 bit integer
         let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
-        // Calculates a time value to execute the method given current time and delay
+                                                            // calculates a time value to execute the method given current time and delay
         let dispatchTime = DispatchTime.now() + Double(delay) / Double(NSEC_PER_SEC)
         
-        // Executes the nextRound method at the dispatch time on the main queue
+                                                                                            //display score page
         DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
+        
             self.displayScore()
-        }
     }
-    
-    func loadGameStartSound() {
+        
+}
+                                                                                             ///load game start sound
+    func loadStartGameSound() {
         let pathToSoundFile = Bundle.main.path(forResource: "GameSound", ofType: "wav")
         let soundURL = URL(fileURLWithPath: pathToSoundFile!)
         AudioServicesCreateSystemSoundID(soundURL as CFURL, &gameSound)
     }
-    
-    func playGameStartSound() {
+
+    func playStartGameSound() {
         AudioServicesPlaySystemSound(gameSound)
     }
 
+
 }
-
-
 
 
 
